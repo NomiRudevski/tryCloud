@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
@@ -33,6 +33,14 @@ def get_users():
     users = User.query.all()
     users_list = [{'id': user.id, 'username': user.username, 'email': user.email} for user in users]
     return jsonify(users_list)
+
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    data = request.json
+    new_user = User(username=data['username'], email=data['email'])
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User added successfully!'})
 
 if __name__ == "__main__":
     app.run(debug=True)
